@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>EDITOR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+		<style>
+			#editor {
+    width: 500px;
+    height: 300px;
+    border: 1px solid #ccc;
+    margin: auto;
+      }
+			#toolbar {
+				background-color: #f5f5f5;
+				padding: 10px;
+				border-bottom: 1px solid #ccc;
+			}
+
+			#content {
+				padding: 10px;
+				min-height: 200px;
+			}
+			#latex_text {
+				display: none;
+			}
+		</style>
+    
+	</head>
+	<body>
+		<div id="editor">
+			<div id="toolbar">
+				<button id="bold">Bold</button>
+				<button id="italic">Italic</button>
+				<button id="underline">Underline</button>
+				<button id="insert-image">Insert Image</button>
+				<button id="undo">Undo</button>
+				<button id="redo">Redo</button>
+				<button id="insert-link">Insert Link</button>
+				<select id="code-language" title="select a code">
+					<option value="javascript">JavaScript</option>
+					<option value="python">Python</option>
+					<option value="java">Java</option>
+					<option value="csharp">C#</option>
+					<option value="c">C</option>
+					<option value="html">HTML</option>
+				</select>
+				<button id="insert-code">Insert Code</button>
+				<button onclick="addLatex(),add()">ADD LATEX</button>
+			</div>
+			<div contenteditable="true" id="content"></div>
+			<span id="latex_text">
+			</span>
+		</div>
+		<script>
+			const boldBtn = document.getElementById("bold");
+			const italicBtn = document.getElementById("italic");
+			const underlineBtn = document.getElementById("underline");
+			const insertImageBtn = document.getElementById("insert-image");
+			const undoBtn = document.getElementById("undo");
+			const redoBtn = document.getElementById("redo");
+			const insertCodeBtn = document.getElementById("insert-code");
+			const codeLanguage = document.getElementById("code-language");
+			const content = document.getElementById("content");
+			const insertLinkBtn = document.getElementById("insert-link");
+			boldBtn.addEventListener("click", function () {
+				document.execCommand("bold", false, null);
+			});
+
+			italicBtn.addEventListener("click", function () {
+				document.execCommand("italic", false, null);
+			});
+
+			underlineBtn.addEventListener("click", function () {
+				document.execCommand("underline", false, null);
+			});
+
+			insertImageBtn.addEventListener("click", function () {
+				const imageUrl = prompt("Enter the URL of the image    :");
+				if (imageUrl) {
+					const img = new Image();
+					img.src = imageUrl;
+					img.onload = function () {
+						document.execCommand("insertImage", false, imageUrl);
+					};
+					img.onerror = function () {
+						alert("Failed to load image. Please enter a valid URL.");
+					};
+				}
+			});
+
+			undoBtn.addEventListener("click", function () {
+				document.execCommand("undo", false, null);
+			});
+
+			redoBtn.addEventListener("click", function () {
+				document.execCommand("redo", false, null);
+			});
+
+			insertCodeBtn.addEventListener("click", function () {
+				const code = prompt("Enter the code:");
+				if (code) {
+					const selectedLanguage =
+						codeLanguage.options[codeLanguage.selectedIndex].value;
+					let codeWrapper;
+					if (selectedLanguage === "html") {
+						codeWrapper = document.createElement("div");
+						codeWrapper.innerHTML = code;
+					} else {
+						codeWrapper = document.createElement("code");
+						codeWrapper.classList.add(selectedLanguage);
+						codeWrapper.innerText = code;
+					}
+					document.execCommand("insertHTML", false, codeWrapper.outerHTML);
+				}
+			});
+
+			insertLinkBtn.addEventListener("click", function () {
+				const link = prompt("Enter the link:");
+				if (link) {
+					document.execCommand("createLink", false, link);
+				}
+			});
+
+		function addLatex(){
+			const latexText=prompt("Enter the text");
+			const latex_text = "\\(" + latexText + "\\)";
+            document.getElementById("latex_text").innerHTML = latex_text;
+            MathJax.Hub.Queue(['Typeset',MathJax.Hub, "latex_text"]);
+		}
+        function add(){
+            document.getElementById("content").innerHTML += " " + document.getElementById("latex_text").innerHTML + " ";
+        }
+		</script>
+	</body>
+</html>
